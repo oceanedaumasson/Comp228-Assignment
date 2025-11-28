@@ -1,0 +1,74 @@
+
+; Group Members
+; Oceane Daumasson ID 40275138
+; Student Two ID 22222222
+; Student Three ID 33333333
+
+section .data
+number db 3     ; you should check that your program
+                ; works with different values
+answer db 1     ; 1 means number is prime,
+                ; 0 means number is not prime
+                ; ASCII 0x0a = LINE FEED (for new line)
+prime_msg db 'Number is prime', 0x0a
+not_prime_msg db 'Number is NOT prime', 0x0a
+
+section .text
+display_prime:
+	mov eax, 4
+        mov ebx, 1
+        mov ecx, prime_msg
+        mov edx, 16
+        int 0x80
+        jmp exit
+
+display_not_prime:
+        mov eax, 4
+        mov ebx, 1
+        mov ecx, not_prime_msg
+        mov edx, 20
+        int 0x80
+        jmp exit
+
+call_display_prime:
+        call display_prime
+
+call_display_not_prime:
+        call display_not_prime
+
+change_answer:
+	mov byte [answer], 0
+        jmp continue
+
+global _start
+_start:
+        mov ebx,2
+        mov al, [number]
+        movzx eax, al
+	mov ecx, eax
+prime_loop:
+        mov eax, ecx
+        xor edx,edx
+        div ebx                 ; does eax/ebx and puts remainder in edx
+        cmp edx,0               ; seeing if edx = 0
+        je change_answer        ; if the remainder is 0, then the number is not prime, display that
+continue:
+        inc ebx                 ; incrementing the divisor
+
+        cmp ebx,ecx             ; if the divisor is still less than the number we're testing
+        jl prime_loop           ; if the divisor is still less than we start the loop again
+
+        cmp byte [answer], 1
+        je call_display_prime
+        cmp byte [answer], 0
+        je call_display_not_prime
+
+exit:   mov eax, 1              ;sys_call sys.exit
+        xor ebx,ebx             ; 0
+        int 0x80                ; call kernel
+
+
+
+
+
+
